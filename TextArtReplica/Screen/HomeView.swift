@@ -146,7 +146,9 @@ struct HomeView: View {
                 ToolbarItem(placement: .bottomBar) {
                     HStack {
                         Button {
-
+                            items.remove(atOffsets: selectedItems)
+                            selectedItems = .init()
+                            
                         } label: {
                             Text("Delete")
                         }
@@ -170,7 +172,10 @@ struct HomeView: View {
         }
         .alert("Create Folder", isPresented: $showCreateFolderAlert) {
             TextField("Folder name", text: $newFolderName)
-            Button("Create") {}
+            Button("Create") {
+                let newFolder = Item(itemType: .folder(title: newFolderName))
+                items.append(newFolder)
+            }
             Button("Cancel", role: .cancel) { }
         }
         .sheet(isPresented: $showSettingView) {
@@ -178,7 +183,6 @@ struct HomeView: View {
         }
 
     }
-
 
     @ViewBuilder
     func followInstagramBar() -> some View {
@@ -216,8 +220,15 @@ struct HomeView: View {
                 .fill(.gray.opacity(0.4))
                 .frame(minHeight: 150)
                 .overlay {
-                    Text(title)
-                        .font(.callout.bold())
+                    VStack(alignment: .center) {
+
+                        Text(title)
+                            .font(.callout.bold())
+
+                        Text("0 files")
+                            .foregroundStyle(.gray)
+                            .font(.caption)
+                    }
                 }
 
         case let .image(name: name):
