@@ -34,6 +34,8 @@ struct HomeView: View {
         Item(itemType: .folder(title: "Instagram project"))
     ]
 
+    @State var selectedItems: IndexSet = .init()
+
     var body: some View {
 
         ScrollView(.vertical) {
@@ -46,6 +48,32 @@ struct HomeView: View {
 
                     ForEach(items ,id:\.self) { item in
                         itemView(item: item)
+                            .overlay(content: {
+                                if let index = items.firstIndex(of: item),
+                                   selectedItems.contains(index) {
+                                    Rectangle()
+                                        .fill(.gray.opacity(0.8))
+                                        .overlay {
+                                            Image(systemName: "checkmark")
+                                                .foregroundStyle(.white)
+                                        }
+                                }
+                            })
+                            .onTapGesture {
+                                switch toggleSelectItems {
+                                case true:
+                                    guard let index = items.firstIndex(of: item)
+                                    else { return }
+                                    if selectedItems.contains(index) {
+                                        selectedItems.remove(index)
+                                    } else {
+                                        selectedItems.insert(index)
+                                    }
+
+                                case false:
+                                    break
+                                }
+                            }
                     }
                 }
                 .frame(maxHeight: .infinity)
@@ -53,7 +81,7 @@ struct HomeView: View {
             }
         }
         // .background(.gray.opacity(0.3))
-        .navigationTitle(toggleSelectItems ? "Selected Items (0)" : "Projects")
+        .navigationTitle(toggleSelectItems ? "Selected Items (\(selectedItems.count))" : "Projects")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if(!toggleSelectItems) {
@@ -92,20 +120,27 @@ struct HomeView: View {
                     }
                 }
                 ToolbarItem(placement: .bottomBar) {
-                    HStack {
-                        Image(systemName: "plus")
-                        Text("Create New Project")
+                    Button {
+
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus")
+                            Text("Create New Project")
+                        }
+                        .foregroundStyle(.black)
                     }
+
                 }
             }
             else {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        selectedItems = .init()
                         toggleSelectItems.toggle()
                     } label: {
                         Text("Done")
                     }
-                    
+
                 }
 
                 ToolbarItem(placement: .bottomBar) {
@@ -124,6 +159,7 @@ struct HomeView: View {
                             Text("Move")
                         }
                     }
+                    .disabled(selectedItems.isEmpty)
                 }
 
             }
@@ -181,7 +217,7 @@ struct HomeView: View {
                 .frame(minHeight: 150)
                 .overlay {
                     Text(title)
-                        .font(.title3.bold())
+                        .font(.callout.bold())
                 }
 
         case let .image(name: name):
