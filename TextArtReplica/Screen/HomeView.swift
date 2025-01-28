@@ -31,13 +31,7 @@ struct HomeView: View {
     @State var toggleSelectItems: Bool = false
     @State var showSettingView: Bool = false
 
-
-    @State var items: [Item] =  [
-        Item(itemType: .folder(title: "FB posts")),
-        Item(itemType: .image(name: "default-image-1")),
-        Item(itemType: .image(name: "default-image-2")),
-        Item(itemType: .folder(title: "Instagram project"))
-    ]
+    @State var items: [Item]
 
     @State var selectedItems: IndexSet = .init()
     @State var openItemIndex: Int?
@@ -85,7 +79,7 @@ struct HomeView: View {
                 EditProjectView(item: $items[openItemIndex ?? 0])
 
             case .editFolderView:
-                EditProjectView(item: $items[openItemIndex ?? 0])
+                HomeView(items: [])
             }
         }
         .toolbar {
@@ -270,5 +264,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(items: [])
 }

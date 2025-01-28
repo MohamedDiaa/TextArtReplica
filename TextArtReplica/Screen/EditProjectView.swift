@@ -23,10 +23,7 @@ struct EditProjectView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         }
-
     }
-
-
 }
 
 //#Preview {
