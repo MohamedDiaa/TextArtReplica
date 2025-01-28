@@ -14,6 +14,7 @@ struct HomeView: View {
     @State var showCreateFolderAlert: Bool = false
     @State var newFolderName: String = ""
     @State var toggleSelectItems: Bool = false
+    @State var showSettingView: Bool = false
 
     var body: some View {
 
@@ -33,7 +34,7 @@ struct HomeView: View {
                 ToolbarItemGroup(placement: .topBarLeading) {
 
                     Button {
-
+                        showSettingView = true
                     } label: {
                         Image(systemName: "gearshape.fill")
                     }
@@ -84,6 +85,9 @@ struct HomeView: View {
             TextField("Folder name", text: $newFolderName)
             Button("Create") {}
             Button("Cancel", role: .cancel) { }
+        }
+        .sheet(isPresented: $showSettingView) {
+            SettingView()
         }
 
     }
