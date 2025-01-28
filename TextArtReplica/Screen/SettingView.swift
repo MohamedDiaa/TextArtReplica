@@ -74,7 +74,6 @@ struct SettingView: View {
                     }
                 }
 
-
                 Section {
                     Text("App Version")
 

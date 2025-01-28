@@ -16,6 +16,24 @@ struct HomeView: View {
     @State var toggleSelectItems: Bool = false
     @State var showSettingView: Bool = false
 
+    @State var images: [String] =  [
+        "arrow.trianglehead.clockwise.hi",
+        "inset.filled.bottomtrailing.rectangle",
+        "person.fill.and.arrow.left.and.arrow.right.outward",
+        "person.badge.plus",
+        "sharedwithyou.circle",
+        "person.2.slash",
+        "forward.end.circle.fill",
+        "shareplay",
+        "inset.filled.bottomleft.rectangle",
+        "arrow.trianglehead.clockwise",
+        "person.badge.shield.exclamationmark",
+        "person.2.circle.fill",
+        "person.badge.clock",
+        "inset.filled.rectangle.and.person.filled.circle.fill"
+    ]
+
+
     var body: some View {
 
         VStack {
@@ -23,10 +41,18 @@ struct HomeView: View {
                 followInstagramBar()
             }
 
-            Text("Hello")
+            LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
+
+                ForEach(images,id:\.self) { img in
+
+                    Image(systemName: img)
+                        .padding(20)
+                }
+            }
 
             Spacer(minLength: 0)
         }
+//        .background(.gray.opacity(0.3))
         .navigationTitle(toggleSelectItems ? "Selected Items (0)" : "Projects")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -65,6 +91,12 @@ struct HomeView: View {
                             }
                     }
                 }
+                ToolbarItem(placement: .bottomBar) {
+                    HStack {
+                        Image(systemName: "plus")
+                        Text("Create New Project")
+                    }
+                }
             }
             else {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -73,8 +105,27 @@ struct HomeView: View {
                     } label: {
                         Text("Done")
                     }
-
+                    
                 }
+
+                ToolbarItem(placement: .bottomBar) {
+                    HStack {
+                        Button {
+
+                        } label: {
+                            Text("Delete")
+                        }
+
+                        Spacer(minLength: 0)
+
+                        Button {
+
+                        } label: {
+                            Text("Move")
+                        }
+                    }
+                }
+
             }
         }
         .confirmationDialog("Select", isPresented: $showConfirmation) {
