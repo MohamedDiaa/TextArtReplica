@@ -9,7 +9,10 @@ import SwiftUI
 
 struct HomeView: View {
 
-    @State var showInstagramFollowBar = true
+    @State var showInstagramFollowBar: Bool = true
+    @State var showConfirmation: Bool = false
+    @State var showCreateFolderAlert: Bool = false
+    @State var newFolderName: String = ""
 
     var body: some View {
 
@@ -51,10 +54,24 @@ struct HomeView: View {
                 Button {
 
                 } label: {
-                    Text("+")
+                    Image(systemName: "plus")
+                        .onTapGesture {
+
+                            showConfirmation = true
+                        }
                 }
             }
         }
+        .confirmationDialog("Select", isPresented: $showConfirmation) {
+            Button("Create Project"){}
+            Button("Create Folder"){ showCreateFolderAlert = true }
+        }
+        .alert("Create Folder", isPresented: $showCreateFolderAlert) {
+            TextField("Folder name", text: $newFolderName)
+            Button("Create") {}
+            Button("Cancel", role: .cancel) { }
+        }
+
     }
 
 
