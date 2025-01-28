@@ -12,10 +12,15 @@ enum TxItemType: Hashable {
     case folder(title: String)
 }
 
-struct Item: Hashable {
+struct Item: Identifiable,Hashable {
+    var id: String = UUID().uuidString
     var itemType: TxItemType
 }
 
+enum Page: Hashable {
+    case editProjectView
+    case editFolderView
+}
 
 struct HomeView: View {
 
@@ -35,6 +40,9 @@ struct HomeView: View {
     ]
 
     @State var selectedItems: IndexSet = .init()
+    @State var openItemIndex: Int?
+
+    @Environment(\.router) private var router
 
     var body: some View {
 
@@ -60,19 +68,7 @@ struct HomeView: View {
                                 }
                             })
                             .onTapGesture {
-                                switch toggleSelectItems {
-                                case true:
-                                    guard let index = items.firstIndex(of: item)
-                                    else { return }
-                                    if selectedItems.contains(index) {
-                                        selectedItems.remove(index)
-                                    } else {
-                                        selectedItems.insert(index)
-                                    }
-
-                                case false:
-                                    break
-                                }
+                                itemTapped(item: item)
                             }
                     }
                 }
@@ -83,6 +79,15 @@ struct HomeView: View {
         // .background(.gray.opacity(0.3))
         .navigationTitle(toggleSelectItems ? "Selected Items (\(selectedItems.count))" : "Projects")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: Page.self) {page in
+            switch page {
+            case .editProjectView:
+                EditProjectView(item: $items[openItemIndex ?? 0])
+
+            case .editFolderView:
+                EditProjectView(item: $items[openItemIndex ?? 0])
+            }
+        }
         .toolbar {
             if(!toggleSelectItems) {
                 ToolbarItemGroup(placement: .topBarLeading) {
@@ -148,7 +153,7 @@ struct HomeView: View {
                         Button {
                             items.remove(atOffsets: selectedItems)
                             selectedItems = .init()
-                            
+
                         } label: {
                             Text("Delete")
                         }
@@ -194,7 +199,6 @@ struct HomeView: View {
             .overlay(alignment: .center) {
                 Text("Follow on twitter")
                     .foregroundStyle(.white)
-
             }
             .overlay(alignment: .leading) {
                 Button {
@@ -236,6 +240,31 @@ struct HomeView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
+        }
+    }
+
+    func itemTapped(item: Item) {
+
+        guard let index = items.firstIndex(of: item)
+        else { return }
+
+        switch toggleSelectItems {
+        case true:
+            if selectedItems.contains(index) {
+                selectedItems.remove(index)
+            } else {
+                selectedItems.insert(index)
+            }
+
+        case false:
+            openItemIndex = index
+
+            switch item.itemType {
+            case .image(_):
+                router.path.append(Page.editProjectView)
+            default:
+                router.path.append(Page.editFolderView)
+            }
         }
     }
 }

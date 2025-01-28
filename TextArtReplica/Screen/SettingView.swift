@@ -19,7 +19,6 @@ struct SettingView: View {
     @Environment(\.dismiss) var dismiss
     @State var importQuality: ImportQuality = .screenSize
 
-
     var body: some View {
 
         NavigationStack {

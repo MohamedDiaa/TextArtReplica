@@ -9,14 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
 
+    @StateObject private var router = Router()
 
     var body: some View {
         
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             HomeView()
                 .navigationBarTitleDisplayMode(.inline)
-
         }
+        .preferredColorScheme(.light)
+        .environment(\.router, router)
+
     }
 }
 
