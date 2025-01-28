@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+enum TxItemType: Hashable {
+    case image(name: String)
+    case folder(title: String)
+}
+
+struct Item: Hashable {
+    var itemType: TxItemType
+}
+
+
 struct HomeView: View {
 
     @State var showInstagramFollowBar: Bool = true
@@ -16,43 +26,33 @@ struct HomeView: View {
     @State var toggleSelectItems: Bool = false
     @State var showSettingView: Bool = false
 
-    @State var images: [String] =  [
-        "arrow.trianglehead.clockwise.hi",
-        "inset.filled.bottomtrailing.rectangle",
-        "person.fill.and.arrow.left.and.arrow.right.outward",
-        "person.badge.plus",
-        "sharedwithyou.circle",
-        "person.2.slash",
-        "forward.end.circle.fill",
-        "shareplay",
-        "inset.filled.bottomleft.rectangle",
-        "arrow.trianglehead.clockwise",
-        "person.badge.shield.exclamationmark",
-        "person.2.circle.fill",
-        "person.badge.clock",
-        "inset.filled.rectangle.and.person.filled.circle.fill"
-    ]
 
+    @State var items: [Item] =  [
+        Item(itemType: .folder(title: "FB posts")),
+        Item(itemType: .image(name: "default-image-1")),
+        Item(itemType: .image(name: "default-image-2")),
+        Item(itemType: .folder(title: "Instagram project"))
+    ]
 
     var body: some View {
 
-        VStack {
-            if showInstagramFollowBar {
-                followInstagramBar()
-            }
-
-            LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
-
-                ForEach(images,id:\.self) { img in
-
-                    Image(systemName: img)
-                        .padding(20)
+        ScrollView(.vertical) {
+            VStack {
+                if showInstagramFollowBar {
+                    followInstagramBar()
                 }
-            }
 
-            Spacer(minLength: 0)
+                LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
+
+                    ForEach(items ,id:\.self) { item in
+                        itemView(item: item)
+                    }
+                }
+                .frame(maxHeight: .infinity)
+                .padding(.horizontal,5)
+            }
         }
-//        .background(.gray.opacity(0.3))
+        // .background(.gray.opacity(0.3))
         .navigationTitle(toggleSelectItems ? "Selected Items (0)" : "Projects")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -168,6 +168,28 @@ struct HomeView: View {
                         .offset(x: 10)
                 }
             }
+    }
+
+    @ViewBuilder
+    func itemView(item: Item) -> some View {
+
+        switch item.itemType {
+        case let .folder(title):
+
+            RoundedRectangle(cornerRadius: 5)
+                .fill(.gray.opacity(0.4))
+                .frame(minHeight: 150)
+                .overlay {
+                    Text(title)
+                        .font(.title3.bold())
+                }
+
+        case let .image(name: name):
+            Image(name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+        }
     }
 }
 
