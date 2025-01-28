@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct TextArtReplicaApp: App {
@@ -13,5 +14,6 @@ struct TextArtReplicaApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: ModelItem.self)
     }
 }

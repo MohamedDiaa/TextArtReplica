@@ -6,20 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct EditProjectView: View {
 
-    @Binding var item: Item
+    @Bindable var item: ModelItem
 
     var body: some View {
 
-        switch item.itemType {
-        case let .image(name: name):
+        if let name = item.project?.name  {
             Image(name)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-        default:
-            Image(.defaultImage1)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         }

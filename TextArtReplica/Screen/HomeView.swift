@@ -6,16 +6,7 @@
 //
 
 import SwiftUI
-
-enum TxItemType: Hashable {
-    case image(name: String)
-    case folder(title: String)
-}
-
-struct Item: Identifiable,Hashable {
-    var id: String = UUID().uuidString
-    var itemType: TxItemType
-}
+import SwiftData
 
 enum Page: Hashable {
     case editProjectView
@@ -31,10 +22,13 @@ struct HomeView: View {
     @State var toggleSelectItems: Bool = false
     @State var showSettingView: Bool = false
 
-    @State var items: [Item]
+    @Query var items: [ModelItem]
 
+    
     @State var selectedItems: IndexSet = .init()
     @State var openItemIndex: Int?
+
+    @Environment(\.modelContext) var modelContext
 
     @Environment(\.router) private var router
 
@@ -76,10 +70,10 @@ struct HomeView: View {
         .navigationDestination(for: Page.self) {page in
             switch page {
             case .editProjectView:
-                EditProjectView(item: $items[openItemIndex ?? 0])
+                EditProjectView(item: items[openItemIndex ?? 0])
 
             case .editFolderView:
-                HomeView(items: [])
+                Text("Folder")
             }
         }
         .toolbar {
@@ -145,7 +139,9 @@ struct HomeView: View {
                 ToolbarItem(placement: .bottomBar) {
                     HStack {
                         Button {
-                            items.remove(atOffsets: selectedItems)
+                            for i in selectedItems {
+                                modelContext.delete(items[i])
+                            }
                             selectedItems = .init()
 
                         } label: {
@@ -172,8 +168,9 @@ struct HomeView: View {
         .alert("Create Folder", isPresented: $showCreateFolderAlert) {
             TextField("Folder name", text: $newFolderName)
             Button("Create") {
-                let newFolder = Item(itemType: .folder(title: newFolderName))
-                items.append(newFolder)
+                let newFolder = ModelItem(project: nil,
+                                          folder: .init(title: newFolderName, modelItems: []))
+                modelContext.insert(newFolder)
             }
             Button("Cancel", role: .cancel) { }
         }
@@ -209,18 +206,16 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    func itemView(item: Item) -> some View {
+    func itemView(item: ModelItem) -> some View {
 
-        switch item.itemType {
-        case let .folder(title):
-
+        if let folder = item.folder {
             RoundedRectangle(cornerRadius: 5)
                 .fill(.gray.opacity(0.4))
                 .frame(minHeight: 150)
                 .overlay {
                     VStack(alignment: .center) {
 
-                        Text(title)
+                        Text(folder.title)
                             .font(.callout.bold())
 
                         Text("0 files")
@@ -228,16 +223,18 @@ struct HomeView: View {
                             .font(.caption)
                     }
                 }
+        }
 
-        case let .image(name: name):
-            Image(name)
+        if let project = item.project {
+            Image(project.name)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
         }
+
     }
 
-    func itemTapped(item: Item) {
+    func itemTapped(item: ModelItem) {
 
         guard let index = items.firstIndex(of: item)
         else { return }
@@ -253,16 +250,17 @@ struct HomeView: View {
         case false:
             openItemIndex = index
 
-            switch item.itemType {
-            case .image(_):
+            if let project = item.project {
                 router.path.append(Page.editProjectView)
-            default:
+            }
+            else {
                 router.path.append(Page.editFolderView)
+
             }
         }
     }
 }
 
-#Preview {
-    HomeView(items: [])
-}
+//#Preview {
+//    HomeView(items: [])
+//}

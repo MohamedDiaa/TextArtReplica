@@ -6,26 +6,34 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
 
+    @Query var modelItems: [ModelItem]
+    @Environment(\.modelContext) var modelContext
+
     @StateObject private var router = Router()
-    var items =  [
-        Item(itemType: .folder(title: "FB posts")),
-        Item(itemType: .image(name: "default-image-1")),
-        Item(itemType: .image(name: "default-image-2")),
-        Item(itemType: .folder(title: "Instagram project"))
-    ]
 
     var body: some View {
-        
+
         NavigationStack(path: $router.path) {
-            HomeView(items: items)
+            HomeView()
                 .navigationBarTitleDisplayMode(.inline)
         }
         .preferredColorScheme(.light)
         .environment(\.router, router)
+        .onAppear {
+           // addSamples()
+        }
 
+    }
+
+    func addSamples() {
+        let f = ModelItem(project: .init(name: "default-image-1"), folder: nil)
+        let f2 = ModelItem(project: .init(name: "default-image-2"), folder: nil)
+        modelContext.insert(f)
+        modelContext.insert(f2)
     }
 }
 
