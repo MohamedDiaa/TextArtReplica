@@ -13,6 +13,7 @@ struct HomeView: View {
     @State var showConfirmation: Bool = false
     @State var showCreateFolderAlert: Bool = false
     @State var newFolderName: String = ""
+    @State var toggleSelectItems: Bool = false
 
     var body: some View {
 
@@ -25,40 +26,53 @@ struct HomeView: View {
 
             Spacer(minLength: 0)
         }
-        .navigationTitle("Projects")
+        .navigationTitle(toggleSelectItems ? "Selected Items (0)" : "Projects")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItemGroup(placement: .topBarLeading) {
+            if(!toggleSelectItems) {
+                ToolbarItemGroup(placement: .topBarLeading) {
 
-                Button {
+                    Button {
 
-                } label: {
-                    Image(systemName: "gearshape.fill")
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                    }
+
+                    Button {
+
+                    } label: {
+                        Image(systemName: "crown.fill")
+                    }
                 }
+                ToolbarItemGroup(placement: .topBarTrailing) {
 
-                Button {
+                    Button {
+                        toggleSelectItems.toggle()
 
-                } label: {
-                    Image(systemName: "crown.fill")
+                    } label: {
+                        Image(systemName: "checkmark.square")
+
+                    }
+
+                    Button {
+
+                    } label: {
+                        Image(systemName: "plus")
+                            .onTapGesture {
+
+                                showConfirmation = true
+                            }
+                    }
                 }
             }
+            else {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        toggleSelectItems.toggle()
+                    } label: {
+                        Text("Done")
+                    }
 
-            ToolbarItemGroup(placement: .topBarTrailing) {
-
-                Button {
-
-                } label: {
-                    Image(systemName: "checkmark.square")
-                }
-
-                Button {
-
-                } label: {
-                    Image(systemName: "plus")
-                        .onTapGesture {
-
-                            showConfirmation = true
-                        }
                 }
             }
         }
@@ -96,7 +110,7 @@ struct HomeView: View {
                     Image(systemName: "xmark")
                         .foregroundStyle(.white)
                         .padding()
-                        .offset(x: 20)
+                        .offset(x: 10)
                 }
             }
     }
