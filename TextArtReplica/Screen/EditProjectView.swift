@@ -15,6 +15,15 @@ var fonts =  ["Filled\nTo\nThe\nBRIM",
               "The\nMODERN\nDAYS",
               "Just My\nType"]
 
+class AddedText: ObservableObject {
+    @Published var title: String = "Hello world"
+    @Published var offset: CGSize = .zero
+    @Published var font: String = ""
+    @Published var fontSize: CGFloat = 40
+    @Published var foregroundColor: Color = .white
+    @Published var rotation: Angle = .zero
+}
+
 struct EditProjectView: View {
 
     @Bindable var item: ModelItem
@@ -23,16 +32,71 @@ struct EditProjectView: View {
 
     @State var sliderOption: CGFloat = 0.3
 
+    @StateObject var added: AddedText = .init()
+
     var body: some View {
 
         VStack {
             VStack {
                 if let name = item.project?.name  {
-                    ZStack {
-                        Image(name)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
+                    GeometryReader { proxy in
+
+                        ZStack {
+                            Image(name)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+
+                            Text(added.title)
+                                .font(.system(size: added.fontSize).bold())
+                                .foregroundStyle(added.foregroundColor)
+                                .padding()
+                                .background(Rectangle().stroke(.white, lineWidth: 2))
+                                .overlay(alignment: .topTrailing) {
+                                    Button {
+
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .font(.system(size: 30))
+                                            .offset(x: 10, y: -10)
+                                            .foregroundStyle(.white)
+                                    }
+                                }
+                                .overlay(alignment: .bottom) {
+                                    Button {
+
+                                    } label: {
+
+                                        Image(systemName: "pencil.circle.fill")
+                                            .font(.system(size: 30))
+                                            .offset(y: 20)
+                                            .foregroundStyle(.white)
+                                    }
+                                }
+                                .rotationEffect(added.rotation)
+                                .offset(added.offset)
+                        }
+
                     }
+                    .gesture(
+
+                        DragGesture().onChanged({ change in
+
+                            added.offset = change.translation
+                        }).simultaneously(
+                            with: RotateGesture().onChanged({ change in
+
+                                added.rotation = change.rotation
+                            })
+                        )
+                        .simultaneously(
+                            with:  MagnifyGesture().onChanged({ change in
+
+                                // print("magnification \(change.magnification)")
+                                added.fontSize =  40 * change.magnification + 3
+                            })
+                        )
+                    )
+
                 }
 
                 Spacer(minLength: 0)
@@ -65,6 +129,18 @@ struct EditProjectView: View {
                 }
             }
         }
+        .toolbar(content: {
+            ToolbarItemGroup(placement: .topBarLeading) {
+
+                Button {
+
+                } label: {
+                    ArtImage(systemName: "plus")
+                        .foregroundStyle(.orange)
+                }
+
+            }
+        })
         .safeAreaPadding()
     }
 
