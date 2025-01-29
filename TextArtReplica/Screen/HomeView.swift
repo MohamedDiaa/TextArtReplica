@@ -21,12 +21,13 @@ struct HomeView: View {
     @State var newFolderName: String = ""
     @State var toggleSelectItems: Bool = false
     @State var showSettingView: Bool = false
+    @State var showCreateProjectView: Bool = false
 
     @Query var items: [ModelItem]
 
-    
     @State var selectedItems: IndexSet = .init()
     @State var openItemIndex: Int?
+
 
     @Environment(\.modelContext) var modelContext
 
@@ -162,7 +163,7 @@ struct HomeView: View {
             }
         }
         .confirmationDialog("Select", isPresented: $showConfirmation) {
-            Button("Create Project"){}
+            Button("Create Project"){ showCreateProjectView = true }
             Button("Create Folder"){ showCreateFolderAlert = true }
         }
         .alert("Create Folder", isPresented: $showCreateFolderAlert) {
@@ -176,6 +177,9 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showSettingView) {
             SettingView()
+        }
+        .sheet(isPresented: $showCreateProjectView) {
+            CreateProjectView()
         }
 
     }
@@ -250,7 +254,7 @@ struct HomeView: View {
         case false:
             openItemIndex = index
 
-            if let project = item.project {
+            if let _ = item.project {
                 router.path.append(Page.editProjectView)
             }
             else {

@@ -24,7 +24,7 @@ struct ContentView: View {
         .preferredColorScheme(.light)
         .environment(\.router, router)
         .onAppear {
-           // addSamples()
+      //      addSamples()
         }
 
     }
@@ -32,6 +32,7 @@ struct ContentView: View {
     func addSamples() {
         let f = ModelItem(project: .init(name: "default-image-1"), folder: nil)
         let f2 = ModelItem(project: .init(name: "default-image-2"), folder: nil)
+
         modelContext.insert(f)
         modelContext.insert(f2)
     }
