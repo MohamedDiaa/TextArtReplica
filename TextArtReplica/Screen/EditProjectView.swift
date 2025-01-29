@@ -191,7 +191,7 @@ struct EditProjectView: View {
                     } label: {
                         Text(option.title)
                             .font(.system(size: 14).bold())
-                            .foregroundStyle(.gray.opacity(0.8))
+                            .foregroundStyle(added.style == option.style ? .black : .gray.opacity(0.8))
                             .frame(width: 90)
                     }
                 }
