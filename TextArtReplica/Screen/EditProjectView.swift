@@ -9,19 +9,21 @@ import SwiftUI
 import SwiftData
 
 
-var fonts =  ["Filled\nTo\nThe\nBRIM",
-              "Modern\nTimes",
-              "mark",
-              "The\nMODERN\nDAYS",
-              "Just My\nType"]
-
-var colorOptions: [Color] = [
+var styleList: [StyleOption] = [
+    .init(style: "Times New Roman", title: "Filled\nTo\nThe\nBRIM"),
+    .init(style: "Copperplate", title: "Modern\nTimes"),
+    .init(style: "Zapfino", title: "mark"),
+    .init(style: "American Typewriter", title: "The\nMODERN\nDAYS"),
+    .init(style: "Bodoni 72 Oldstyle", title: "Just My\nType"),
+]
+var colorList: [Color] = [
     .blue, .gray,  .white, .red, .green,
     .cyan, .yellow, .mint, .orange, .purple, .brown,
 ]
 
 class OverlayText: ObservableObject {
     @Published var title: String = "Hello world"
+    @Published var style: String = "Copperplate"
     @Published var offset: CGSize = .zero
     @Published var font: String = ""
     @Published var fontSize: CGFloat = 40
@@ -31,7 +33,6 @@ class OverlayText: ObservableObject {
     @Published var opacity: CGFloat = 1.0
     @Published var blur: CGFloat = 0
     @Published var brightness: CGFloat = 0
-
 }
 
 struct EditProjectView: View {
@@ -131,7 +132,8 @@ struct EditProjectView: View {
     func OverLayText(_ overlay: OverlayText) -> some View {
 
         Text(overlay.title)
-            .font(.system(size: overlay.fontSize).bold())
+            .font(.custom(overlay.style, size: overlay.fontSize))
+//            .font(.system(size: overlay.fontSize).bold())
             .foregroundStyle(overlay.foregroundColor)
             .shadow(color: .gray, radius: overlay.shadow)
             .padding()
@@ -182,11 +184,16 @@ struct EditProjectView: View {
 
         ScrollView(.horizontal) {
             HStack {
-                ForEach(fonts,id: \.self) { font in
-                    Text(font)
-                        .font(.system(size: 14).bold())
-                        .foregroundStyle(.gray.opacity(0.8))
-                        .frame(width: 90)
+                ForEach(styleList,id: \.self) { option in
+
+                    Button {
+                        added.style = option.style
+                    } label: {
+                        Text(option.title)
+                            .font(.system(size: 14).bold())
+                            .foregroundStyle(.gray.opacity(0.8))
+                            .frame(width: 90)
+                    }
                 }
             }
             .padding()
@@ -213,7 +220,7 @@ struct EditProjectView: View {
             HStack {
                 ScrollView(.horizontal,showsIndicators: false) {
                     HStack(spacing: 10){
-                        ForEach(colorOptions, id: \.self) {option in
+                        ForEach(colorList, id: \.self) {option in
 
                             Button {
                                 added.foregroundColor = option
