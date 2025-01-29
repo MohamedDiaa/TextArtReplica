@@ -28,7 +28,6 @@ struct HomeView: View {
     @State var selectedItems: IndexSet = .init()
     @State var openItemIndex: Int?
 
-
     @Environment(\.modelContext) var modelContext
 
     @Environment(\.router) private var router

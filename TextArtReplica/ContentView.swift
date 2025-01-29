@@ -24,17 +24,21 @@ struct ContentView: View {
         .preferredColorScheme(.light)
         .environment(\.router, router)
         .onAppear {
-      //      addSamples()
+            if modelItems.isEmpty {
+                addSamples()
+            }
         }
 
     }
 
     func addSamples() {
-        let f = ModelItem(project: .init(name: "default-image-1"), folder: nil)
-        let f2 = ModelItem(project: .init(name: "default-image-2"), folder: nil)
-
-        modelContext.insert(f)
-        modelContext.insert(f2)
+        [
+            ModelItem(project: .init(name: "default-image-1"), folder: nil),
+            ModelItem(project: .init(name: "default-image-2"), folder: nil),
+            ModelItem(project: .init(name: "default-image-3"), folder: nil)
+        ].forEach {
+            modelContext.insert($0)
+        }
     }
 }
 
